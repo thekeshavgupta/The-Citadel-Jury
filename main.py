@@ -1,9 +1,10 @@
+import sys
 from Agents.agent_jury import AgentJury
 from Agents.agent_defendent import AgentDefender
 from Agents.agent_prosecutor import AgentProsector
 
 
-def main():
+def main(userClaim):
     # initialise the LLM which prosecutes the user claim
     agent_prosecutor = AgentProsector("llama-3.1-8b-instant", 0.8, "groq")
     
@@ -17,9 +18,7 @@ def main():
     confidenceOfMotion = 1
     round = 1
     debateHistory = []
-    
-    userClaim = "Women are more horny than men"
-    while(confidenceOfMotion > 0.6):
+    while(confidenceOfMotion >= 0.5):
         # agent_prosecutor makes its arguments and outputs them after analysing the whole history
         agent_prosecutor_output = agent_prosecutor.perform_prosecution(debateHistory, userClaim)
         debateHistory.append({
@@ -49,10 +48,17 @@ def main():
         
         # update the round of debate
         round+=1
-        print(f"Round {round} discussion completed.... confidenceOfMotion: {confidenceOfMotion}")
+        print(f"***Round {round} discussion completed.... confidenceOfMotion: {confidenceOfMotion}***")
+    
+    print("################################")
     print(debateHistory)
-    print("==================")
+    print("################################")
     
     
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print("Usage: python main.py '<user_claim>'")
+        sys.exit(1)
+    
+    user_claim = sys.argv[1]
+    main(userClaim=user_claim)
