@@ -10,7 +10,9 @@ class AgentProsector(Agent):
         parser = PydanticOutputParser(pydantic_object=ProsecutorOutput)
         # structured_output = self.agent.with_structured_output(ProsecutorOutput)
         prompt = ProsecutorPrompt(debateHistory, userClaim, parser)
-        return self.agent.invoke(prompt.generatePrompt())
+        prompt = prompt.generatePrompt()
+        result = self.agent.invoke(prompt)
+        return parser.parse(result.content)
         
     
         

@@ -16,9 +16,9 @@ class JuryPrompt:
             """,
             input_variables=['userclaim', 'debateHistory'],
             validate_template=True,
-            partial_variables=[{
+            partial_variables={
                 'format_instruction': self.parser.get_format_instructions()
-            }]
+            }
         )
         
         return template.invoke({

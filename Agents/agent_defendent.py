@@ -10,7 +10,9 @@ class AgentDefender(Agent):
         parser = PydanticOutputParser(pydantic_object=DefendentOutput)
         # structured_output = self.agent.with_structured_output(DefendentOutput)
         prompt = DefendentPrompt(debateHistory, userClaim, parser)
-        return self.agent.invoke(prompt.generatePrompt())
+        prompt = prompt.generatePrompt()
+        result = self.agent.invoke(prompt)
+        return parser.parse(result.content)
         
     
         

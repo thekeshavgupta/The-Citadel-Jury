@@ -8,10 +8,10 @@ def main():
     agent_prosecutor = AgentProsector("llama-3.1-8b-instant", 0.8, "groq")
     
     # initialise the LLM which defends the user claim
-    agent_defendent = AgentDefender("llama-3.1-8b-instant", 0.8, "groq")
+    agent_defendent = AgentDefender("llama-3.3-70b-versatile", 0.8, "groq")
     
     # intialise the LLM which as a  jury, collects the findings and then gives the verdict
-    agent_jury = AgentJury("llama-3.1-8b-instant", 0.8, "groq")
+    agent_jury = AgentJury("llama-3.3-70b-versatile", 0.8, "groq")
     
     # confidenceOfMotion represents how confident the jury is that the case can be carried for further discussions
     confidenceOfMotion = 1
@@ -19,37 +19,37 @@ def main():
     debateHistory = []
     
     userClaim = "Women are more horny than men"
-    while(confidenceOfMotion):
+    while(confidenceOfMotion > 0.6):
         # agent_prosecutor makes its arguments and outputs them after analysing the whole history
         agent_prosecutor_output = agent_prosecutor.perform_prosecution(debateHistory, userClaim)
         debateHistory.append({
-            'agent': 'ProsecutionAgent',
-            'Role': 'Tell why the user claim is invalid',
-            'agent_output': agent_prosecutor_output.content
+            "agent": "ProsecutionAgent",
+            "Role": "Tell why the user claim is invalid",
+            "agent_output": agent_prosecutor_output.findings
         })
         
         # Similary, agent_defendent makes its arguments and outputs them after analysing the whole history
         agent_defendent_output = agent_defendent.defend_argument(debateHistory, userClaim)
         debateHistory.append({
-            'agent': 'DefenderAgent',
-            'Role': 'Tell why the user claim is valid',
-            'agent_output': agent_defendent_output.content
+            "agent": "DefenderAgent",
+            "Role": "Tell why the user claim is valid",
+            "agent_output": agent_defendent_output.findings
         })
         
         # agent_jury analyses both the arguments and gives the verdict
         agent_jury_output = agent_jury.get_verdict(debateHistory, userClaim)
         debateHistory.append({
-            'agent': 'JuryAgent',
-            'Role': 'Analyses the findings from both the agents and tells its final verdict',
-            'agent_output': agent_jury_output.content
+            "agent": "JuryAgent",
+            "Role": "Analyses the findings from both the agents and tells its final verdict",
+            "agent_output": agent_jury_output
         })
         
         # check whether the discussion needs to be carried forward or not.
-        confidenceOfMotion = 0
+        confidenceOfMotion = agent_jury_output.confidentOfMotion
         
         # update the round of debate
         round+=1
-        break
+        print(f"Round {round} discussion completed.... confidenceOfMotion: {confidenceOfMotion}")
     print(debateHistory)
     print("==================")
     

@@ -10,6 +10,8 @@ class AgentJury(Agent):
         parser = PydanticOutputParser(pydantic_object=JuryOutput)
         # structured_output = self.agent.with_structured_output(JuryOutput)
         prompt = JuryPrompt(debateHistory, userClaim, parser)
-        return self.agent.invoke(prompt.generatePrompt())
+        prompt = prompt.generatePrompt()
+        result = self.agent.invoke(prompt)
+        return parser.parse(result.content)
     
         
